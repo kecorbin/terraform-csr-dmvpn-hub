@@ -21,6 +21,11 @@ data "template_file" "csr_userdata" {
   }
 }
 
+resource "aws_eip" "lb" {
+  instance = "${aws_instance.csr.id}"
+  vpc      = true
+}
+
 resource "aws_instance" "csr" {
   ami           = data.aws_ami.csr.id
   instance_type = var.csr_instance_size
@@ -31,7 +36,7 @@ resource "aws_instance" "csr" {
     aws_security_group.allow_local.id
   ]
   subnet_id                   = aws_subnet.public_subnet.id
-  associate_public_ip_address = true
+  // associate_public_ip_address = true
   source_dest_check           = false
 
 }
@@ -51,6 +56,10 @@ resource "aws_network_interface" "g2" {
 
 output "csr_ip" {
   value = aws_instance.csr.public_ip
+}
+
+output "eip" {
+  value = aws_eip.csr.public_ip
 }
 
 output "tunnel_ip" {
