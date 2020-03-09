@@ -54,11 +54,8 @@ resource "aws_network_interface" "g2" {
   }
 }
 
-output "csr_ip" {
-  value = aws_instance.csr.public_ip
-}
 
-output "eip" {
+output "csr_ip" {
   value = aws_eip.csr.public_ip
 }
 
