@@ -37,7 +37,9 @@ resource "aws_instance" "csr" {
   ]
   subnet_id                   = aws_subnet.public_subnet.id
   source_dest_check = false
-
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 
