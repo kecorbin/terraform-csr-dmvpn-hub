@@ -22,7 +22,7 @@ data "template_file" "csr_userdata" {
 }
 
 resource "aws_eip" "csr" {
-  network_interface = aws_instance.csr.network_interface_id
+  network_interface = aws_instance.csr.primary_network_interface_id
   vpc               = true
 }
 
