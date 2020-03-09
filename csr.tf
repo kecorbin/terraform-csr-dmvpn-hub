@@ -22,7 +22,7 @@ data "template_file" "csr_userdata" {
 }
 
 resource "aws_eip" "csr" {
-  network_interface = aws_instance.csr.primary_network_interface_id
+  network_interface = aws_instance.csr.network_interface_id
   vpc               = true
 }
 
@@ -37,9 +37,7 @@ resource "aws_instance" "csr" {
   ]
   subnet_id                   = aws_subnet.public_subnet.id
   source_dest_check = false
-  lifecycle {
-    create_before_destroy = true
-  }
+
 }
 
 
