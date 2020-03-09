@@ -22,6 +22,9 @@ data "template_file" "csr_userdata" {
 }
 
 resource "aws_eip" "csr" {
+  depends_on = [
+    aws_instance.csr
+  ]
   network_interface = aws_instance.csr.primary_network_interface_id
   vpc               = true
 }
