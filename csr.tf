@@ -21,7 +21,7 @@ data "template_file" "csr_userdata" {
   }
 }
 
-resource "aws_eip" "lb" {
+resource "aws_eip" "csr" {
   instance = "${aws_instance.csr.id}"
   vpc      = true
 }
