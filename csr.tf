@@ -38,7 +38,6 @@ resource "aws_instance" "csr" {
 
 resource "aws_network_interface" "g1" {
   subnet_id   = aws_subnet.public_subnet.id
-  private_ips = [var.csr_internal_ip]
   security_groups = [
     aws_security_group.csr_public.id,
     aws_security_group.allow_local.id
