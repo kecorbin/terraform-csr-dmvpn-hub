@@ -19,9 +19,7 @@ variable "csr_instance_size" {
   default = "c4.large"
 }
 
-variable "csr_hostname" {
-  default = "hub_1"
-}
+variable "csr_hostname" {}
 
 variable "csr_internal_ip" {
   default = "10.0.2.10"
