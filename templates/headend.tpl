@@ -52,8 +52,3 @@ ios-config-50=" ip address dhcp"
 ios-config-51=" ip nat inside"
 ios-config-52="interface GigabitEthernet1"
 ios-config-53=" ip nat outside"
-ios-config-55="ip nat inside source list NAT_ACL interface GigabitEthernet1 overload"
-ios-config-56="ip access-list extended NAT_ACL"
-ios-config-57=" deny ip ${private_subnet} 0.0.0.255 10.0.0.0 0.255.255.255"
-ios-config-58=" permit ip ${private_subnet} 0.255.255.255 any"
-
