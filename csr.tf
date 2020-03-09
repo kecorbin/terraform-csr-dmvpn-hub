@@ -17,7 +17,6 @@ data "template_file" "csr_userdata" {
     tunnel_key = var.tunnel_key
     private_subnet = split("/", var.private_subnet_cidr)[0]
     isakmp_key = var.isakmp_key
-    consul_address = var.consul_address
     tunnel_ip = var.tunnel_ip
   }
 }
