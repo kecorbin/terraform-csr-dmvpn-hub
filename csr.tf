@@ -52,3 +52,7 @@ resource "aws_network_interface" "g2" {
 output "csr_ip" {
   value = aws_instance.csr.public_ip
 }
+
+output "tunnel_ip" {
+  value = var.tunnel_ip
+}
