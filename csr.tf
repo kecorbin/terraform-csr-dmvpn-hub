@@ -22,7 +22,7 @@ data "template_file" "csr_userdata" {
 }
 
 resource "aws_eip" "csr" {
-  network_interface = aws_network_interface.g1.id
+  network_interface = aws_instance.csr.primary_network_interface_id
   vpc               = true
 }
 
@@ -31,24 +31,15 @@ resource "aws_instance" "csr" {
   instance_type = var.csr_instance_size
   key_name      = var.ssh_keypair_name
   user_data     = data.template_file.csr_userdata.rendered
-  // associate_public_ip_address = true
-  source_dest_check = false
-
-}
-
-resource "aws_network_interface" "g1" {
-  subnet_id   = aws_subnet.public_subnet.id
-  security_groups = [
+  vpc_security_group_ids = [
     aws_security_group.csr_public.id,
     aws_security_group.allow_local.id
   ]
+  subnet_id                   = aws_subnet.public_subnet.id
   source_dest_check = false
 
-  attachment {
-    instance     = aws_instance.csr.id
-    device_index = 0
-  }
 }
+
 
 
 resource "aws_network_interface" "g2" {
