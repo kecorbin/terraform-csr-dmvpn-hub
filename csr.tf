@@ -59,7 +59,8 @@ resource "aws_network_interface" "g2" {
 
 
 output "csr_ip" {
-  value = aws_eip.csr.public_ip
+
+  value = aws_eip.csr.public_ip != "" ? aws_eip.csr.public_ip : "undefined"
 }
 
 output "tunnel_ip" {
