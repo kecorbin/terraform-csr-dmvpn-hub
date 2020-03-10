@@ -22,10 +22,7 @@ data "template_file" "csr_userdata" {
 }
 
 resource "aws_eip" "csr" {
-  depends_on = [
-    aws_instance.csr
-  ]
-  associate_with_private_ip = aws_instance.csr.private_ip
+  network_interface = aws_network_interface.g1.id
   vpc               = true
 }
 
@@ -40,9 +37,22 @@ resource "aws_instance" "csr" {
   ]
   subnet_id                   = aws_subnet.public_subnet.id
   source_dest_check = false
+  network_interface {
+    network_interface_id = aws_network_interface.g1.id
+    device_index         = 0
+  }  
+  network_interface {
+    network_interface_id = aws_network_interface.g2.id
+    device_index         = 1
+  }  
 
 }
 
+resource "aws_network_interface" "g1" {
+  subnet_id         = aws_subnet.public_subnet.id
+  security_groups   = [aws_security_group.csr_public.id]
+  source_dest_check = false
+}
 
 
 resource "aws_network_interface" "g2" {
@@ -50,11 +60,6 @@ resource "aws_network_interface" "g2" {
   private_ips       = [var.csr_internal_ip]
   security_groups   = [aws_security_group.private_subnet.id]
   source_dest_check = false
-
-  attachment {
-    instance     = aws_instance.csr.id
-    device_index = 1
-  }
 }
 
 
