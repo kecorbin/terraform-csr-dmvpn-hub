@@ -35,7 +35,6 @@ resource "aws_instance" "csr" {
     aws_security_group.csr_public.id,
     aws_security_group.allow_local.id
   ]
-  subnet_id                   = aws_subnet.public_subnet.id
   source_dest_check = false
   network_interface {
     network_interface_id = aws_network_interface.g1.id
