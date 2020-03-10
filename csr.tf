@@ -31,7 +31,7 @@ resource "aws_instance" "csr" {
   instance_type = var.csr_instance_size
   key_name      = var.ssh_keypair_name
   user_data     = data.template_file.csr_userdata.rendered
-  source_dest_check = false
+  
   network_interface {
     network_interface_id = aws_network_interface.g1.id
     device_index         = 0
