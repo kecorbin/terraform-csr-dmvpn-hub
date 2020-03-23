@@ -57,11 +57,3 @@ resource "aws_network_interface" "g2" {
   source_dest_check = false
 }
 
-
-output "csr_ip" {
-  value = aws_eip.csr.public_ip
-}
-
-output "tunnel_ip" {
-  value = var.tunnel_ip
-}
