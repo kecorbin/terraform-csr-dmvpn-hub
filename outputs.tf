@@ -18,3 +18,18 @@ output "consul_ip" {
 output "datacenter" {
   value = var.datacenter
 }
+
+output "tunnel_key" {
+  value = var.tunnel_key
+  sensitive   = true
+}
+
+output "nhrp_authentication_key" {
+  value = var.nhrp_authentication_key
+  sensitive   = true
+}
+
+output "isakmp_key" {
+  value = var.isakmp_key
+  sensitive   = true
+}
