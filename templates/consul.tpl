@@ -65,6 +65,7 @@ ports {
   grpc = 8502
 }
 client_addr = "0.0.0.0"
+recursors = ["127.0.0.53"]
 enable_central_service_config = true
 EOF
 
@@ -161,3 +162,15 @@ EOF
 
 sudo docker-compose -f /home/ubuntu/app/docker-compose.yml up -d
 sudo docker-compose -f /home/ubuntu/gateway/docker-compose.yml up -d
+
+# configure dns
+sudo iptables -t nat -A PREROUTING -p udp -m udp --dport 53 -j REDIRECT --to-ports 8600
+sudo iptables -t nat -A PREROUTING -p tcp -m tcp --dport 53 -j REDIRECT --to-ports 8600
+sudo iptables -t nat -A OUTPUT -d localhost -p udp -m udp --dport 53 -j REDIRECT --to-ports 8600
+sudo iptables -t nat -A OUTPUT -d localhost -p tcp -m tcp --dport 53 -j REDIRECT --to-ports 8600
+
+cat << EOF > /etc/resolv.conf
+nameserver 127.0.0.1
+search ec2.internal consul
+EOF
+
