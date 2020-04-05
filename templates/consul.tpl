@@ -105,6 +105,13 @@ service {
         tcp = "$LAN_IP:20000"
         interval ="10s"
       }
+      proxy {
+        upstreams {
+          destination_name = "api"
+          local_bind_address = "127.0.0.1"
+          local_bind_port = 8080
+        }
+      }
     }
   }
 }
@@ -139,6 +146,7 @@ services:
     image: nicholasjackson/fake-service:v0.7.3
     network_mode: "host"
     environment:
+      UPSTREAM_URIS: "http://localhost:8080"
       LISTEN_ADDR: 0.0.0.0:9094
       NAME: web
       MESSAGE: "web Service running in ${datacenter}"
