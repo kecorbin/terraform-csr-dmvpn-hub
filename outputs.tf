@@ -7,10 +7,14 @@ output "tunnel_ip" {
   value = var.tunnel_ip
 }
 
-output "public_subnet" {
-    value = aws_subnet.public_subnet.id
+output "private_subnets" {
+    value = module.vpc.private_subnets
 }
 
-output "private_subnet" {
-    value = aws_subnet.public_subnet.id
+output "consul_ip" {
+  value = aws_instance.consul.private_ip
+}
+
+output "datacenter" {
+  value = var.datacenter
 }

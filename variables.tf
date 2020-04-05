@@ -12,20 +12,19 @@ variable "availability_zone" {
   default = "us-east-1a"
 }
 
-variable "public_subnet_cidr" {
-  default = "10.0.1.0/24"
+variable "public_subnets" {
 }
-variable "private_subnet_cidr" {
-  default = "10.0.2.0/24"
+
+variable "private_subnets" {
 }
+
 variable "ssh_keypair_name" {}
 
 variable "csr_instance_size" {
   default = "c4.large"
 }
-
 variable "csr_hostname" {}
-
+variable "datacenter" {}
 variable "csr_internal_ip" {
   default = "10.0.2.10"
 }

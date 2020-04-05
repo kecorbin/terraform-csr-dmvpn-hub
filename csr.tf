@@ -13,11 +13,17 @@ data "template_file" "csr_userdata" {
   template = "${file("${path.module}/templates/headend.tpl")}"
   vars = {
     hostname                = var.csr_hostname
+    consul_ip = aws_instance.consul.private_ip    
     nhrp_authentication_key = var.nhrp_authentication_key
     tunnel_key              = var.tunnel_key
-    private_subnet          = split("/", var.private_subnet_cidr)[0]
     isakmp_key              = var.isakmp_key
     tunnel_ip               = var.tunnel_ip
+    // derive an IOS route for vpc cidr
+    // e.g 10.1.0.0 255.255.0.0
+    internal_route = join(" ", [split("/", var.vpc_cidr)[0], cidrnetmask(var.vpc_cidr)])
+    // vpc router
+    vpc_router = cidrhost(var.private_subnets[0], 1)
+
   }
 }
 
@@ -44,14 +50,14 @@ resource "aws_instance" "csr" {
 }
 
 resource "aws_network_interface" "g1" {
-  subnet_id         = aws_subnet.public_subnet.id
+  subnet_id         = module.vpc.public_subnets[0]
   security_groups   = [aws_security_group.csr_public.id]
   source_dest_check = false
 }
 
 
 resource "aws_network_interface" "g2" {
-  subnet_id         = aws_subnet.private_subnet.id
+  subnet_id         = module.vpc.private_subnets[0]
   private_ips       = [var.csr_internal_ip]
   security_groups   = [aws_security_group.private_subnet.id]
   source_dest_check = false

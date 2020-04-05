@@ -1,72 +1,37 @@
-resource "aws_vpc" "default" {
-  cidr_block           = var.vpc_cidr
+data "aws_availability_zones" "available" {}
+
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 2.6"
+  name                 = var.datacenter
+  cidr                 = var.vpc_cidr
+  azs                  = data.aws_availability_zones.available.names
+  private_subnets      = var.private_subnets
+  public_subnets       = var.public_subnets
+  enable_nat_gateway   = true
+  single_nat_gateway   = true
   enable_dns_hostnames = true
-  tags = {
-    Name = var.vpc_name
-  }
+
 }
 
-resource "aws_internet_gateway" "default" {
-  vpc_id = aws_vpc.default.id
+resource "aws_route" "internal_10_nets" {
+  route_table_id            = module.vpc.private_route_table_ids[0]
+  destination_cidr_block    = "10.0.0.0/8"
+  network_interface_id      = aws_network_interface.g2.id
 }
 
-resource "aws_subnet" "public_subnet" {
-  vpc_id = aws_vpc.default.id
-
-  cidr_block        = var.public_subnet_cidr
-  availability_zone = var.availability_zone
-
-  tags = {
-    Name = "Public Subnet"
-  }
+resource "aws_route" "default_route" {
+  route_table_id            = module.vpc.private_route_table_ids[0]
+  destination_cidr_block    = "76.0.0.0/8"
+  network_interface_id      = aws_network_interface.g2.id
 }
 
-resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.default.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.default.id
-  }
-
-  tags = {
-    Name = "Public Subnet"
-  }
+resource "aws_route" "internal_192_168_nets" {
+  route_table_id            = module.vpc.private_route_table_ids[0]
+  destination_cidr_block    = "192.168.0.0/16"
+  network_interface_id      = aws_network_interface.g2.id
 }
 
-resource "aws_route_table_association" "public_route_table" {
-  subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.public_route_table.id
-}
-
-/*
-  Private Subnet
-*/
-resource "aws_subnet" "private_subnet" {
-  vpc_id = aws_vpc.default.id
-
-  cidr_block        = var.private_subnet_cidr
-  availability_zone = var.availability_zone
-
-  tags = {
-    Name = "Private Subnet"
-  }
-}
-
-resource "aws_route_table" "private_route_table" {
-  vpc_id = aws_vpc.default.id
-
-  route {
-    cidr_block           = "0.0.0.0/0"
-    network_interface_id = aws_network_interface.g2.id
-  }
-
-  tags = {
-    Name = "Private Subnet"
-  }
-}
-
-resource "aws_route_table_association" "private_route_table" {
-  subnet_id      = aws_subnet.private_subnet.id
-  route_table_id = aws_route_table.private_route_table.id
+output "private_route_table_ids" {
+  value = module.vpc.private_route_table_ids
 }
