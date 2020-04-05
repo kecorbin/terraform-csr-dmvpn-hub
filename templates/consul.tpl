@@ -91,10 +91,10 @@ EOF
 
 consul config write proxy-defaults.hcl
 mkdir -p /home/ubuntu/app
-cat << EOF > /home/ubuntu/app/currency.hcl
+cat  << EOF > /home/ubuntu/app/web.hcl
 service {
-  name = "currency"
-  id = "currency"
+  name = "web"
+  id = "web"
   address = "$LAN_IP"
   port = 9094
   connect {
@@ -110,35 +110,75 @@ service {
 }
 EOF
 
-    # Run currency service instances
+cat  << EOF > /home/ubuntu/app/api.hcl
+service {
+  name = "api"
+  id = "api"
+  address = "$LAN_IP"
+  port = 9095
+  connect {
+    sidecar_service {
+      port = 20001
+      check {
+        name = "Connect Envoy Sidecar"
+        tcp = "$LAN_IP:20001"
+        interval ="10s"
+      }
+    }
+  }
+}
+EOF
 
+
+    # Run web service instances
 cat << EOF > /home/ubuntu/app/docker-compose.yml
 version: "3.3"
 services:
-  # Define currency service and envoy sidecar proxy for version 2 of the service
-  currency:
+  # Define web service and envoy sidecar proxy for version 2 of the service
+  web:
     image: nicholasjackson/fake-service:v0.7.3
     network_mode: "host"
     environment:
       LISTEN_ADDR: 0.0.0.0:9094
-      NAME: currency
-      MESSAGE: "Currency Service running in ${datacenter}"
+      NAME: web
+      MESSAGE: "web Service running in ${datacenter}"
       SERVER_TYPE: "http"
     volumes:
-      - "./currency.hcl:/config/currency.hcl"
+      - "./web.hcl:/config/web.hcl"
 
-  currency_proxy:
+  web_proxy:
     image: nicholasjackson/consul-envoy
     network_mode: "host"
     environment:
       CONSUL_HTTP_ADDR: $LAN_IP:8500
       CONSUL_GRPC_ADDR: $LAN_IP:8502
-      SERVICE_CONFIG: /config/currency.hcl
+      SERVICE_CONFIG: /config/web.hcl
     volumes:
-      - "./currency.hcl:/config/currency.hcl"
-    command: ["consul", "connect", "envoy", "-admin-bind", "$LAN_IP:19094", "-sidecar-for", "currency"]
+      - "./web.hcl:/config/web.hcl"
+    command: ["consul", "connect", "envoy", "-admin-bind", "$LAN_IP:19094", "-sidecar-for", "web"]
+  api:
+    image: nicholasjackson/fake-service:v0.7.3
+    network_mode: "host"
+    environment:
+      LISTEN_ADDR: 0.0.0.0:9095
+      NAME: api
+      MESSAGE: "api Service running in ${datacenter}"
+      SERVER_TYPE: "http"
+    volumes:
+      - "./api.hcl:/config/api.hcl"
 
+  api_proxy:
+    image: nicholasjackson/consul-envoy
+    network_mode: "host"
+    environment:
+      CONSUL_HTTP_ADDR: $LAN_IP:8500
+      CONSUL_GRPC_ADDR: $LAN_IP:8502
+      SERVICE_CONFIG: /config/api.hcl
+    volumes:
+      - "./api.hcl:/config/api.hcl"
+    command: ["consul", "connect", "envoy", "-admin-bind", "$LAN_IP:19095", "-sidecar-for", "api"]
 EOF
+
 mkdir -p /home/ubuntu/gateway
 cat << EOF > /home/ubuntu/gateway/docker-compose.yml
 version: "3.3"
