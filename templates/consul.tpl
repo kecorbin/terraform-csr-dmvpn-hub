@@ -222,3 +222,5 @@ cat << EOF > /etc/systemd/resolved.conf
 DNS=127.0.0.1
 Domains=~consul
 EOF
+
+sudo systemctl restart systemd-resolved.service
