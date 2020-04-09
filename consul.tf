@@ -72,7 +72,7 @@ data "template_file" "init" {
 resource "aws_instance" "consul" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "m5.large"
-  subnet_id              = module.vpc.private_subnets[1]
+  subnet_id              = module.vpc.private_subnets[0]
   vpc_security_group_ids = [
     aws_security_group.consul_servers.id
   ]
