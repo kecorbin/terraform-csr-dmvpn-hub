@@ -117,4 +117,12 @@ resource "aws_security_group" "consul_servers" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  // allow web UI
+  ingress {
+    from_port   = 9094
+    to_port     = 9094
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
 }
