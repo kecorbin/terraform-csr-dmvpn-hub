@@ -59,5 +59,6 @@ ios-config-57=" network 192.168.1.0 0.0.0.255"
 ios-config-58=" redistribute static"
 ios-config-59="ip nat inside source static tcp ${consul_ip} 22 interface GigabitEthernet1 2022"
 ios-config-60="ip nat inside source static tcp ${consul_ip} 8500 interface GigabitEthernet1 8500"
-ios-config-61="ip route ${internal_route} ${vpc_router}
+ios-config-61="ip nat inside source static tcp ${consul_ip} 80 interface GigabitEthernet1 8000"
+ios-config-62="ip route ${internal_route} ${vpc_router}
 

@@ -10,7 +10,7 @@ resource "aws_security_group" "csr_public" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  // allow all traffic 
+  // allow all traffic - DEMO purposes only!!!
   ingress {
     from_port   = 0
     to_port     = 0
