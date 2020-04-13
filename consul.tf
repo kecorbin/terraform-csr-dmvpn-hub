@@ -66,6 +66,9 @@ data "template_file" "init" {
   vars = {
     datacenter = var.datacenter
     primary_datacenter = var.datacenter
+    csr_hostname       = "${var.datacenter}-csr1"
+    csr_private_ip     = aws_network_interface.g2.private_ip
+
   }
 }
 

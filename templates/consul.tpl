@@ -224,3 +224,40 @@ Domains=~consul
 EOF
 
 sudo systemctl restart systemd-resolved.service
+
+# register consul external node for CSR
+cat << EOF > /home/ubuntu/dmvpn-gateway.json
+{
+  "Datacenter": "${datacenter}",
+  "Node": "${csr_hostname}",
+  "Address": "${csr_private_ip}",
+  "NodeMeta": {
+    "external-node": "true",
+    "external-probe": "true"
+  },
+  "Service": {
+    "ID": "${csr_hostname}-ssh",
+    "Service": "ssh",
+    "Tags": [
+      "router"
+    ],
+    "Address": "${csr_private_ip}",
+    "Port": 22
+  },
+  "Checks": [{
+    "Node": "${csr_hostname}",
+    "CheckID": "service:ssh",
+    "Name": "SSH Access",
+    "Notes": "Cisco CSR router",
+    "Status": "passing",
+    "ServiceID": "${csr_hostname}-ssh",
+    "Definition": {
+      "TCP": "${csr_private_ip}:22",
+      "Interval": "5s",
+      "Timeout": "1s",
+      "DeregisterCriticalServiceAfter": "30s"
+     }
+  }]
+}
+EOF
+curl --request PUT --data @/home/ubuntu/dmvpn-gateway.json localhost:8500/v1/catalog/register
