@@ -12,7 +12,7 @@ data "aws_ami" "csr" {
 data "template_file" "csr_userdata" {
   template = "${file("${path.module}/templates/headend.tpl")}"
   vars = {
-    hostname                = var.csr_hostname
+    hostname                = "${var.datacenter}-csr1"
     consul_ip = aws_instance.consul.private_ip    
     nhrp_authentication_key = var.nhrp_authentication_key
     tunnel_key              = var.tunnel_key
