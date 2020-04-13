@@ -27,10 +27,6 @@ variable "csr_instance_size" {
 }
 variable "csr_hostname" {}
 variable "datacenter" {}
-variable "csr_internal_ip" {
-  default = "10.0.2.10"
-}
-
 variable "tunnel_key" {}
 
 variable "nhrp_authentication_key" {}
